@@ -2,16 +2,15 @@ FROM jenkins/inbound-agent:jdk21
 
 USER root
 
-# Install dependencies in one layer
+# Install dependencies (removed openjdk-17-jdk)
 RUN apt-get update && apt-get install -y \
-    openjdk-17-jdk \
     ruby \
     ruby-dev \
     build-essential \
     git \
     wget \
     unzip \
-    && rm -rf /var/lib/apt/lists/*  # Clean up to reduce image size
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Fastlane
 RUN gem install fastlane -NV
