@@ -36,41 +36,30 @@ RUN yes | sdkmanager --licenses && \
     "platforms;android-33" \
     "platforms;android-34"
 
-# Pre-install Gradle 8.5 and 8.7
+# Pre-install Gradle
 ENV GRADLE_VERSION=8.7
 RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
     unzip -q gradle-${GRADLE_VERSION}-bin.zip -d /opt && \
     rm gradle-${GRADLE_VERSION}-bin.zip && \
     ln -s /opt/gradle-${GRADLE_VERSION}/bin/gradle /usr/bin/gradle
 
-# Also pre-cache Gradle 8.5 for wrapper
-RUN wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip && \
-    mkdir -p /opt/gradle-cache && \
-    unzip -q gradle-8.5-bin.zip -d /opt/gradle-cache && \
+# Also cache Gradle 8.5 for wrapper
+RUN mkdir -p /opt/gradle-cache && \
+    cd /opt/gradle-cache && \
+    wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip && \
+    unzip -q gradle-8.5-bin.zip && \
     rm gradle-8.5-bin.zip
 
 ENV GRADLE_HOME=/opt/gradle-${GRADLE_VERSION}
 ENV PATH=${PATH}:${GRADLE_HOME}/bin
 
-# Pre-install common Ruby gems (for faster bundle install)
-RUN gem install \
-    google-apis-androidpublisher_v3 \
-    google-apis-playcustomapp_v1 \
-    google-apis-firebaseappdistribution_v1 \
-    firebase_app_distribution \
-    faraday \
-    faraday-em_synchrony \
-    -N
-
-# Create jenkins home and set permissions
-RUN mkdir -p /home/jenkins && chown -R jenkins:jenkins /home/jenkins
-
-# Set default gem paths for jenkins user
+# Set gem paths
 ENV GEM_HOME=/home/jenkins/.gems
 ENV BUNDLE_PATH=/home/jenkins/.bundle
 ENV PATH=${GEM_HOME}/bin:${PATH}
 
-USER jenkins
+# Create directories and set permissions
+RUN mkdir -p /home/jenkins/.gems /home/jenkins/.bundle /home/jenkins/.gradle && \
+    chown -R jenkins:jenkins /home/jenkins
 
-# Pre-create directories
-RUN mkdir -p $GEM_HOME $BUNDLE_PATH ~/.gradle
+USER jenkins
