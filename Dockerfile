@@ -27,14 +27,15 @@ RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools && \
     rm commandlinetools-linux-9477386_latest.zip && \
     mv cmdline-tools latest
 
-# Accept licenses and install Android build tools
+# Accept licenses and install Android build tools + NDK
 RUN yes | sdkmanager --licenses && \
     sdkmanager \
     "platform-tools" \
     "build-tools;33.0.0" \
     "build-tools;34.0.0" \
     "platforms;android-33" \
-    "platforms;android-34"
+    "platforms;android-34" \
+    "ndk;28.0.12433566"
 
 # Pre-install Gradle
 ENV GRADLE_VERSION=8.7
@@ -58,7 +59,10 @@ ENV GEM_HOME=/home/jenkins/.gems
 ENV BUNDLE_PATH=/home/jenkins/.bundle
 ENV PATH=${GEM_HOME}/bin:${PATH}
 
-# Create directories and set permissions
+# CRITICAL: Give jenkins user write access to Android SDK
+RUN chown -R jenkins:jenkins ${ANDROID_SDK_ROOT}
+
+# Create other directories
 RUN mkdir -p /home/jenkins/.gems /home/jenkins/.bundle /home/jenkins/.gradle && \
     chown -R jenkins:jenkins /home/jenkins
 
