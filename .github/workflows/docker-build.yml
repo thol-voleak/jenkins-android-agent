@@ -28,7 +28,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/jenkins-android-agent:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/jenkins-android-agent:v1.0
             ${{ secrets.DOCKERHUB_USERNAME }}/jenkins-android-agent:${{ github.sha }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/jenkins-android-agent:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/jenkins-android-agent:buildcache,mode=max
